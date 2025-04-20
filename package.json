@@ -1,0 +1,97 @@
+{
+  "name": "@zenuml/codemirror-extensions",
+  "version": "0.1.0",
+  "description": "CodeMirror 6 extensions for ZenUML",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./extensions": {
+      "types": "./dist/extensions/index.d.ts",
+      "import": "./dist/extensions/index.js",
+      "default": "./dist/extensions/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "demo": "vite --open src/demo/index.html",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "build:grammar": "lezer-generator src/grammar/zenuml.grammar -o src/grammar/zenuml-parser.js",
+    "watch:grammar": "nodemon --watch src/grammar/zenuml.grammar --exec 'npm run build:grammar'",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "prepublishOnly": "npm run build",
+    "prepare": "husky",
+    "lint": "biome check .",
+    "lint:fix": "biome check --apply .",
+    "format": "biome format .",
+    "format:fix": "biome format --write ."
+  },
+  "dependencies": {
+    "@lezer/common": "^1.2.1",
+    "@lezer/highlight": "^1.2.0",
+    "@lezer/lr": "^1.4.0",
+    "thememirror": "^2.0.1"
+  },
+  "peerDependencies": {
+    "@codemirror/autocomplete": "^6.13.0",
+    "@codemirror/commands": "^6.3.3",
+    "@codemirror/language": "^6.10.1",
+    "@codemirror/lint": "^6.8.5",
+    "@codemirror/search": "^6.5.5",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/view": "^6.24.1",
+    "codemirror": "^6.0.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.6.3",
+    "@codemirror/autocomplete": "^6.13.0",
+    "@codemirror/commands": "^6.3.3",
+    "@codemirror/language": "^6.10.1",
+    "@codemirror/lint": "^6.8.5",
+    "@codemirror/search": "^6.5.5",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/view": "^6.24.1",
+    "@lezer/generator": "^1.7.0",
+    "@types/node": "^20.11.28",
+    "codemirror": "^6.0.1",
+    "happy-dom": "^17.4.4",
+    "husky": "9.1.7",
+    "lint-staged": "15.5.1",
+    "nodemon": "^3.1.9",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^3.7.2",
+    "vitest": "^1.4.0"
+  },
+  "keywords": [
+    "codemirror",
+    "zenuml",
+    "extension",
+    "syntax",
+    "highlighting"
+  ],
+  "author": "ZenUML Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZenUml/zenuml-codemirror-plugins"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,21 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"noEmit": false,
+		"allowImportingTsExtensions": false,
+	},
+	"include": [
+		"src/extensions/**/*",
+		"src/grammar/**/*",
+		"src/index.ts"
+	],
+	"exclude": [
+		"src/test/**/*",
+		"src/**/*.test.ts",
+		"src/vite-env.d.ts"
+	]
+}
