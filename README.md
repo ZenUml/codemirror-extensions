@@ -117,14 +117,6 @@ import { toggleDarkMode } from '@zenuml/codemirror-extensions/dark-mode';
 
 `zenumlAutocomplete()` - Provides autocompletion suggestions for ZenUML.
 
-### Theme Toggle
-
-`themeToggle()` - Adds theme toggling functionality between light and dark modes.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
 
 MIT

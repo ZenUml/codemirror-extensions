@@ -6,22 +6,22 @@ import { zenumlHighlighter } from './zenuml-highlighter';
 import { checkZenuml } from './zenuml-linter';
 
 describe('Sequence Linter', () => {
-    function getDiagnostics(doc: string) {
-        const state = EditorState.create({
-            doc: doc.trim(),
-            extensions: [
-                // Add the ZenUML language support
-                zenumlHighlighter(),
-            ]
-        });
-        const view = new EditorView({ state, parent: document.body });
-        const diagnostics = checkZenuml(view);
-        view.destroy();
-        return diagnostics;
-    }
+	function getDiagnostics(doc: string) {
+		const state = EditorState.create({
+			doc: doc.trim(),
+			extensions: [
+				// Add the ZenUML language support
+				zenumlHighlighter(),
+			],
+		});
+		const view = new EditorView({ state, parent: document.body });
+		const diagnostics = checkZenuml(view);
+		view.destroy();
+		return diagnostics;
+	}
 
-    it('should detect no linting errors', () => {
-        const doc = `title Order Service (Demonstration only)
+	it('should detect no linting errors', () => {
+		const doc = `title Order Service (Demonstration only)
 // Styling participants with background colors is an experimental feature.
 // This feature is available for users to test and provide feedback.
 @Actor Client #FFEBE6
@@ -47,99 +47,114 @@ OrderController.post(payload12) {
 			}
 		}
 	}
-}`
-        const diagnostics = getDiagnostics(doc);
+}`;
+		const diagnostics = getDiagnostics(doc);
 
-        expect(diagnostics).toHaveLength(0);
-    })
+		expect(diagnostics).toHaveLength(0);
+	});
 
-    it('should detect no errors for function parameters', () => {
-        const doc = `
+	it('should detect no errors for function parameters', () => {
+		const doc = `
 			OrderController.post(payload12) {
 				order = new Order(payload)
 			}
 		`;
-        const diagnostics = getDiagnostics(doc);
-        const tree = parser.parse(doc);
-        console.log(tree.toString());
-        expect(diagnostics).toHaveLength(0);
-    })
-    it('should detect unclosed stereotypes', () => {
-        const doc = `
+		const diagnostics = getDiagnostics(doc);
+
+		expect(diagnostics).toHaveLength(0);
+	});
+	it('should detect unclosed stereotypes', () => {
+		const doc = `
       <<interface A
     `;
-        const diagnostics = getDiagnostics(doc);
-        expect(diagnostics).toHaveLength(1);
-        expect(diagnostics[0].message).toBe('Unclosed stereotype');
-    });
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(1);
+		expect(diagnostics[0].message).toBe('Unclosed stereotype');
+	});
 
-    it('should detect invalid color formats', () => {
-        const doc = `
+	it('should detect invalid color formats', () => {
+		const doc = `
       participant A #12
     `;
-        const diagnostics = getDiagnostics(doc);
+		const diagnostics = getDiagnostics(doc);
 
-        expect(diagnostics).toHaveLength(1);
-        expect(diagnostics[0].message).toBe('Invalid color format');
-    });
+		expect(diagnostics).toHaveLength(1);
+		expect(diagnostics[0].message).toBe('Invalid color format');
+	});
 
-    it('should detect empty blocks', () => {
-        const doc = `
+	it('should detect empty group block', () => {
+		const doc = `
       group test {
       }
     `;
-        const diagnostics = getDiagnostics(doc);
-        expect(diagnostics).toHaveLength(1);
-        expect(diagnostics[0].message).toBe('Empty block');
-    });
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(1);
+		expect(diagnostics[0].message).toBe('Empty block');
+	});
 
-    it('not a empty block', () => {
-        const doc = `
+	it('should detect empty if statement block', () => {
+		const doc = `
+      if (true) {
+      }
+    `;
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(1);
+		expect(diagnostics[0].message).toBe('Empty block');
+	});
+
+	it('not a empty block', () => {
+		const doc = `
       group test {
         @Lambda PurchaseService
         @AzureFunction InvoiceService
       }
     `;
-        const diagnostics = getDiagnostics(doc);
-        const tree = parser.parse(doc);
-        console.log(tree);
-        expect(diagnostics).toHaveLength(0);
-    })
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(0);
+	});
 
+	it('should detect empty condition', () => {
+		const doc = ` if () {
+        x = 1
+      }
+    `;
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(1);
+		expect(diagnostics[0].message).toBe('Empty condition');
+	});
 
-    it('should detect undefined participants', () => {
-        const doc = `
+	it('should detect undefined participants', () => {
+		const doc = `
        A -> B:
     `;
 
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(2);
+		expect(diagnostics[0].message).toBe('Undefined participant: A');
+		expect(diagnostics[1].message).toBe('Undefined participant: B');
+	});
 
-        const diagnostics = getDiagnostics(doc);
-        expect(diagnostics).toHaveLength(2);
-        expect(diagnostics[0].message).toBe('Undefined participant: A');
-        expect(diagnostics[1].message).toBe('Undefined participant: B');
-    });
-
-    it('should detect missing to participant', () => {
-        const doc = `
+	it('should detect missing to participant', () => {
+		const doc = `
       A ->
     `;
-        const diagnostics = getDiagnostics(doc);
-        expect(diagnostics).toHaveLength(2);
-        expect(diagnostics[0].message).toBe('Undefined participant: A');
-        expect(diagnostics[1].message).toBe('Missing To participant');
-    });
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(2);
+		expect(diagnostics[0].message).toBe('Undefined participant: A');
+		expect(diagnostics[1].message).toBe('Missing To participant');
+	});
 
-    it('should detect missing from participant', () => {
-        const doc = `
+	it('should detect missing from participant', () => {
+		const doc = `
       -> B: message
     `;
-        const diagnostics = getDiagnostics(doc);
-        expect(diagnostics).toHaveLength(2);
-        expect(diagnostics[0].message).toBe('Missing From participant');
-        expect(diagnostics[1].message).toBe('Undefined participant: B');
-    });
+		const diagnostics = getDiagnostics(doc);
+		expect(diagnostics).toHaveLength(2);
+		expect(diagnostics[0].message).toBe('Missing From participant');
+		expect(diagnostics[1].message).toBe('Undefined participant: B');
+	});
 
-    afterEach(() => {
-        document.body.innerHTML = '';
-    });
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
 });

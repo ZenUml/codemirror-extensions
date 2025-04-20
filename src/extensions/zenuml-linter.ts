@@ -9,6 +9,8 @@ interface ParticipantInfo {
 	isDefined: boolean;
 }
 
+const BraceBlockTypes = ['BraceBlock', 'GroupBraceBlock', 'StatementBraceBlock'];
+
 function checkDocument(view: EditorView): Diagnostic[] {
 	const diagnostics: Diagnostic[] = [];
 	const tree = syntaxTree(view.state);
@@ -121,7 +123,7 @@ function checkDocument(view: EditorView): Diagnostic[] {
 		}
 
 		// // Check for empty blocks
-		if (node.type.name === 'BraceBlock') {
+		if (BraceBlockTypes.includes(node.type.name)) {
 			if (isEmptyBlock(node as unknown as TreeCursor)) {
 				diagnostics.push({
 					from: node.from,
@@ -131,6 +133,17 @@ function checkDocument(view: EditorView): Diagnostic[] {
 				});
 			} else {
 				cursor.parent();
+			}
+		}
+
+		if (node.type.name === 'Condition') {
+			if (isEmptyCondition(node as unknown as TreeCursor)) {
+				diagnostics.push({
+					from: node.from,
+					to: node.to,
+					severity: 'info',
+					message: 'Empty condition',
+				});
 			}
 		}
 
@@ -155,7 +168,7 @@ function validateColorHexCode(colorText: string): boolean {
 	return /^#([0-9a-fA-F]{6})$/.test(colorText);
 }
 
-const listOfEmptyBlockTypes = ['Newline', 'OpenBrace', 'CloseBrace', 'BraceBlock', '⚠'];
+const listOfEmptyBlockTypes = ['Newline', 'OpenBrace', 'CloseBrace', '⚠', ...BraceBlockTypes];
 function isEmptyBlock(node: TreeCursor): boolean {
 	let isEmpty = true;
 	try {
@@ -180,6 +193,32 @@ function isEmptyBlock(node: TreeCursor): boolean {
 		return isEmpty;
 	}
 }
+
+function isEmptyCondition(node: TreeCursor): boolean {
+	let isEmpty = true;
+	try {
+		node.iterate(
+			(child: SyntaxNodeRef) => {
+				if (child.type.name === 'Identifier') {
+					isEmpty = false;
+					throw new Error('Not an empty condition');
+				}
+			},
+			(child: SyntaxNodeRef) => {
+				if (child.type.name === 'Identifier') {
+					isEmpty = false;
+					throw new Error('Not an empty condition');
+				}
+			}
+		);
+
+		return isEmpty;
+		// biome-ignore lint/correctness/noUnusedVariables: Catching and ignoring the error to determine if block is empty
+	} catch (e) {
+		return isEmpty;
+	}
+}
+
 // Export both the linter extension and the direct diagnostic function
 export const checkZenuml = checkDocument;
 export const zenumlLinter = () => linter((view) => checkDocument(view));

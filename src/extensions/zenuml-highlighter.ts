@@ -10,9 +10,9 @@ const zenumlHighlighting = styleTags({
 	LineContent: t.content,
 
 	// Control flow keywords
-	'IfKeyword ElseKeyword WhileKeyword ReturnKeyword NewKeyword TryKeyword CatchKeyword FinallyKeyword ParKeyword':
+	'IfKeyword ElseKeyword WhileKeyword ReturnKeyword NewKeyword TryKeyword CatchKeyword FinallyKeyword ParKeyword AsyncKeyword':
 		t.controlKeyword,
-	'NullKeyword TrueKeyword FalseKeyword': t.bool,
+	'NullKeyword TrueKeyword FalseKeyword UndefinedKeyword': t.bool,
 
 	// Participant keywords
 	'ParticipantKeyword ActorKeyword StereotypeKeyword StarterAnnotation': t.heading,
@@ -32,15 +32,9 @@ const zenumlHighlighting = styleTags({
 
 	// --- Context-Specific Identifiers ---
 	// Style Identifier when it's directly under nodes where it represents a 'Name'
-	'Participant/Identifier': t.variableName, // Participant declaration Name
-	'Group/Identifier': t.variableName, // Group declaration Name
-	'Stereotype/Identifier': t.variableName, // Name inside a Stereotype
-	'From/Identifier': t.variableName, // 'From' participant Name
-	'To/Identifier': t.variableName, // 'To' participant Name (Should cover OrderController)
-	'Label/Identifier': t.variableName, // Name used as a Label
-
-	// Style Identifier when it's directly under a node where it represents a 'MethodName'
-	'Signature/Identifier': t.propertyName, // Method name within a Signature (Should cover post)
+	'Participant/Name/Identifier': t.variableName, // Participant declaration Name
+	'Stereotype/Name/Identifier': t.annotation, // Name inside a Stereotype
+	'Label/Name/Identifier': t.variableName, // Name used as a Label
 
 	// Style other specific identifier uses
 	'Type/Identifier': t.typeName, // Identifier used as a Type
@@ -100,13 +94,13 @@ const lightHighlightStyle = HighlightStyle.define([
 
 // Dark theme colors
 const highlightStyle = HighlightStyle.define([
-	{ tag: t.heading, color: '#90caf9', fontWeight: 'bold' },
+	{ tag: t.heading, color: '#2cabf5', fontWeight: 'bold' },
 	{ tag: t.content, color: '#81c784' },
 	{ tag: t.keyword, color: '#ff79c6' },
 	{ tag: t.string, color: '#81c784' },
 	{ tag: t.number, color: '#64b5f6' },
 	{ tag: t.bool, color: '#bd93f9' },
-	{ tag: t.variableName, color: '#4fc3f7' },
+	{ tag: t.variableName, color: '#99e6ff' },
 	{ tag: t.typeName, color: '#ce93d8' },
 	{ tag: t.propertyName, color: '#ffb74d' },
 	{ tag: t.operator, color: '#ffb74d' },
@@ -117,6 +111,7 @@ const highlightStyle = HighlightStyle.define([
 	{ tag: t.className, color: '#81c784' },
 	{ tag: t.labelName, color: '#ffb74d' },
 	{ tag: t.brace, color: '#bd93f9' },
+	{ tag: t.paren, color: '#e4f52c' },
 ]);
 
 // Create a compartment for the highlighting style

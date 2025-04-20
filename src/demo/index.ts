@@ -13,7 +13,9 @@ import {
 	zenumlCompletions,
 	zenumlHighlighter,
 	zenumlLinter,
+	zenumlParticipantsListener,
 } from '../extensions';
+import { parser } from '../grammar/zenuml-parser';
 import { getInitialTheme, setTheme } from './dark-mode';
 import { createThemeExtension } from './them-toggle';
 // Define autocompletion source
@@ -35,11 +37,11 @@ group BusinessService {
 // POST /orders
 OrderController.post(payload12) {
 	// [font-bold, underline]
-	OrderService."create(payload) 6" {
+	OrderService.create(payload) {
 		// [underline, font-bold]
 		order = new Order(payload)
 		if (order != null) {
-      par {
+            par {
 				PurchaseService.createPO(order)
 				InvoiceService.createInvoice(order)
 			}
@@ -50,6 +52,10 @@ OrderController.post(payload12) {
 const themeCompartment = new Compartment();
 const lightTheme = tomorrow;
 const darkTheme = dracula;
+
+// Initial parsing of the document
+const initialTree = parser.parse(doc);
+console.log(initialTree.toString());
 
 // Create the editor
 const state = EditorState.create({
@@ -73,10 +79,10 @@ const state = EditorState.create({
 			{ key: 'ArrowUp', run: moveCompletionSelection(false) },
 			{ key: 'Escape', run: closeCompletion },
 		]),
+		EditorView.updateListener.of(zenumlParticipantsListener),
 	],
 });
 
-// Create and mount the editor
 const editorElement = document.getElementById('editor');
 
 // Add event listener for theme toggle

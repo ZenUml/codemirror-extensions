@@ -3,8 +3,8 @@
 @precedence {
   starter @left,
   title @left,
-  member @left,
   name @left,
+  member @left,
   call @left,
   prefix @right,
   times @left,
@@ -50,19 +50,19 @@ TitleContent { !title LineContent }
   Comma { "," }
   SemiColon { ";" }
   Colon { ":" }
-  
+
   Color { "#" $[0-9a-fA-F]+ }
-  
+
   // Special annotations
   StarterAnnotation { "@Starter" | "@starter" }
   ReturnAnnotation { "@Return" | "@return" | "@Reply" | "@reply" }
-  
+
   // Regular annotations (must come after special annotations)
   Annotation { "@" $[a-zA-Z_0-9]+ }
-  
+
   // Comments must be defined before division operator
   Comment { "//" ![\n]* }
-  
+
   // Operators
   DivideOp { "/" }
   MultiplyOp { "*" }
@@ -70,7 +70,7 @@ TitleContent { !title LineContent }
   PlusOp { "+" }
   MinusOp { "-" }
   ArrowOp { "->" }
-  
+
   // Keywords
   IfKeyword { "if" }
   ElseKeyword { "else" }
@@ -83,6 +83,8 @@ TitleContent { !title LineContent }
   TrueKeyword { "true" }
   FalseKeyword { "false" }
   NullKeyword { "null" }
+  AsyncKeyword { "async" }
+  UndefinedKeyword { "undefined" }
   TitleKeyword { "title" }
   GroupKeyword { "group" }
   AsKeyword { "as" }
@@ -93,19 +95,19 @@ TitleContent { !title LineContent }
   FrameKeyword { "frame" }
   RefKeyword { "ref" }
   ParticipantKeyword { "participant" }
-  
+
   // Numbers must be defined before Dot and be more specific
   Number { $[0-9]+ "." $[0-9]+ | $[0-9]+ }
-  
+
   Identifier { $[a-zA-Z_] $[a-zA-Z_0-9]* }
   String { '"' (!["\\] | "\\" _)* '"' }
-  
+
   Equals { "=" }
-  
+
   @precedence {
     TitleContent,
     Comment,
-    StarterAnnotation, 
+    StarterAnnotation,
     TitleKeyword,
     ParticipantKeyword,
     ReturnAnnotation,
@@ -129,6 +131,8 @@ TitleContent { !title LineContent }
     SectionKeyword,
     FrameKeyword,
     RefKeyword,
+    AsyncKeyword,
+    UndefinedKeyword,
     Identifier,
     String,
     Number,
@@ -150,13 +154,13 @@ Head { !statement StarterExp | (Group | (Participant StatementTerminator?))+ }
 
 Name { !name Identifier  }
 
-Group { 
+Group {
   !group GroupKeyword Name? GroupBraceBlock |
   !group GroupKeyword Name? !statement
 }
 
-StarterExp { 
-  !starter StarterAnnotation (OpenParen Starter? CloseParen)? 
+StarterExp {
+  !starter StarterAnnotation (OpenParen Starter? CloseParen)?
 }
 
 Starter { Identifier | String }
@@ -356,7 +360,9 @@ Atom {
   String |
   TrueKeyword |
   FalseKeyword |
-  NullKeyword 
+  NullKeyword |
+  AsyncKeyword |
+  UndefinedKeyword
 }
 
 Type { !message Identifier }
