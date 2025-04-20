@@ -194,18 +194,19 @@ function isEmptyBlock(node: TreeCursor): boolean {
 	}
 }
 
+const booleanKeywords = ['TrueKeyword', 'FalseKeyword', 'NullKeyword', 'UndefinedKeyword'];
 function isEmptyCondition(node: TreeCursor): boolean {
 	let isEmpty = true;
 	try {
 		node.iterate(
 			(child: SyntaxNodeRef) => {
-				if (child.type.name === 'Identifier') {
+				if (child.type.name === 'Identifier' || booleanKeywords.includes(child.type.name)) {
 					isEmpty = false;
 					throw new Error('Not an empty condition');
 				}
 			},
 			(child: SyntaxNodeRef) => {
-				if (child.type.name === 'Identifier') {
+				if (child.type.name === 'Identifier' || booleanKeywords.includes(child.type.name)) {
 					isEmpty = false;
 					throw new Error('Not an empty condition');
 				}
