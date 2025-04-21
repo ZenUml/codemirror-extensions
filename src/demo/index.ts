@@ -1,20 +1,15 @@
-import {
-	acceptCompletion,
-	autocompletion,
-	closeCompletion,
-	moveCompletionSelection,
-} from '@codemirror/autocomplete';
+import { autocompletion } from '@codemirror/autocomplete';
 import { Compartment, EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { dracula, tomorrow } from 'thememirror';
 import {
-	updateHighlightStyle,
+	zenumlCompletionKeyMaps,
+	zenumlCompletionListener,
 	zenumlCompletions,
-	zenumlHighlighter,
-	zenumlLinter,
-	zenumlParticipantsListener,
 } from '../extensions';
+import { updateHighlightStyle, zenumlHighlighter } from '../extensions/zenuml-highlighter';
+import { zenumlLinter } from '../extensions/zenuml-linter';
 import { parser } from '../grammar/zenuml-parser';
 import { getInitialTheme, setTheme } from './dark-mode';
 import { createThemeExtension } from './them-toggle';
@@ -72,14 +67,8 @@ const state = EditorState.create({
 		}),
 		themeCompartment.of(darkTheme),
 		zenumlLinter(),
-		keymap.of([
-			{ key: 'Tab', run: acceptCompletion },
-			{ key: 'Enter', run: acceptCompletion },
-			{ key: 'ArrowDown', run: moveCompletionSelection(true) },
-			{ key: 'ArrowUp', run: moveCompletionSelection(false) },
-			{ key: 'Escape', run: closeCompletion },
-		]),
-		EditorView.updateListener.of(zenumlParticipantsListener),
+		keymap.of([...zenumlCompletionKeyMaps]),
+		EditorView.updateListener.of(zenumlCompletionListener),
 	],
 });
 

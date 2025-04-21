@@ -72,7 +72,13 @@ pnpm build
 ```js
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import { zenumlHighlighter, zenumlLinter, zenumlAutocomplete } from '@zenuml/codemirror-extensions';
+import { 
+  zenumlHighlighter,
+  zenumlLinter,
+  zenumlCompletions,
+  zenumlCompletionListener,
+  zenumlCompletionKeyMaps,
+} from '@zenuml/codemirror-extensions';
 
 // Create a new editor
 const editor = new EditorView({
@@ -87,6 +93,8 @@ const editor = new EditorView({
         selectOnOpen: true,
         icons: true,
       }),
+    	keymap.of([...zenumlCompletionKeyMaps]),
+      EditorView.updateListener.of(zenumlCompletionListener),  
     ]
   }),
   parent: document.getElementById('editor')
