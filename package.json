@@ -1,6 +1,6 @@
 {
   "name": "@zenuml/codemirror-extensions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CodeMirror 6 extensions for ZenUML",
   "type": "module",
   "main": "dist/index.js",

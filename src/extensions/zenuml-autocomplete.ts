@@ -36,7 +36,6 @@ function zenumlCompletionListener(update: ViewUpdate): void {
 	if (update.docChanged) {
 		const content = update.state.doc.toString();
 		const tree = parser.parse(content);
-		console.log(tree.toString());
 		extractParticipantNames(content, tree);
 	}
 }
