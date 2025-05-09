@@ -94,7 +94,6 @@ TitleContent { !title LineContent }
   SectionKeyword { "section" }
   FrameKeyword { "frame" }
   RefKeyword { "ref" }
-  ParticipantKeyword { "participant" }
 
   // Numbers must be defined before Dot and be more specific
   Number { $[0-9]+ "." $[0-9]+ | $[0-9]+ }
@@ -109,7 +108,6 @@ TitleContent { !title LineContent }
     Comment,
     StarterAnnotation,
     TitleKeyword,
-    ParticipantKeyword,
     ReturnAnnotation,
     Annotation,
     IfKeyword,
@@ -166,9 +164,10 @@ StarterExp {
 Starter { Identifier | String }
 
 Participant {
+  !participant ParticipantType Stereotype Name Width? Label? Color? StatementTerminator? |
   !participant ParticipantType Name Width? Label? Color? StatementTerminator? |
-  !participant Stereotype  Name Width? Label? Color? StatementTerminator? |
-  !participant ParticipantKeyword Name Width? Label? Color? StatementTerminator?
+  !participant Stereotype Name Width? Label? Color? StatementTerminator? |
+  !participant Name Width? Label? Color? StatementTerminator?
 }
 
 ParticipantType { Annotation }

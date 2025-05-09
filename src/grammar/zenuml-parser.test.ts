@@ -58,8 +58,8 @@ function hasNode(tree: Tree, type: string): boolean {
 describe('ZenUML Parser', () => {
 	it('print parser tree', () => {
 		const code = `
-participant User
-participant System
+@actor User
+@actor System
 User -> System: login()
 if (isValid) {
 	User -> System: success()
@@ -77,14 +77,21 @@ if (isValid) {
 	});
 
 	describe('parses participant declarations', () => {
-		it('parses participant keyword', () => {
-			const tree = parse('participant User');
+		it('parses participant', () => {
+			const tree = parse('User');
 			expect(hasNode(tree, 'Participant')).toBe(true);
-			expect(hasNode(tree, 'ParticipantKeyword')).toBe(true);
-			expect(String(tree)).toBe('Program(Head(Participant(ParticipantKeyword,Name(Identifier))))');
+			expect(String(tree)).toBe('Program(Head(Participant(Name(Identifier))))');
 		});
 
-		it('parses stereotype', () => {
+		it('parses participant with annotation', () => {
+			const tree = parse('@actor User');
+			expect(hasNode(tree, 'Participant')).toBe(true);
+			expect(String(tree)).toBe(
+				'Program(Head(Participant(ParticipantType(Annotation),Name(Identifier))))'
+			);
+		});
+
+		it('parses participant with stereotype', () => {
 			const tree = parse('<<interface>> User');
 			expect(hasNode(tree, 'Stereotype')).toBe(true);
 			expect(String(tree)).toBe(
@@ -92,9 +99,13 @@ if (isValid) {
 			);
 		});
 
-		it('parses participant type', () => {
-			const tree = parse('@actor User');
-			expect(hasNode(tree, 'ParticipantType')).toBe(true);
+		it('parses participant with stereotype and annotation', () => {
+			const tree = parse('@actor <<interface>> User');
+			expect(hasNode(tree, 'Stereotype')).toBe(true);
+			expect(hasNode(tree, 'Annotation')).toBe(true);
+			expect(String(tree)).toBe(
+				'Program(Head(Participant(ParticipantType(Annotation),Stereotype(OpenStereotype,Name(Identifier),CloseStereotype),Name(Identifier))))'
+			);
 		});
 	});
 
