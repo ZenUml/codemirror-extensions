@@ -76,14 +76,15 @@ import {
   zenumlHighlighter,
   zenumlLinter,
   zenumlCompletions,
-  zenumlCompletionListener,
   zenumlCompletionKeyMaps,
+  zenumlParticipantStateField,
 } from '@zenuml/codemirror-extensions';
 
 // Create a new editor
 const editor = new EditorView({
   state: EditorState.create({
     extensions: [
+      zenumlParticipantStateField,
       zenumlHighlighter(),
       zenumlLinter(),
       autocompletion({
@@ -94,7 +95,6 @@ const editor = new EditorView({
         icons: true,
       }),
     	keymap.of([...zenumlCompletionKeyMaps]),
-      EditorView.updateListener.of(zenumlCompletionListener),  
     ]
   }),
   parent: document.getElementById('editor')

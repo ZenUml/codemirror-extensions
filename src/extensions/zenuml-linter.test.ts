@@ -1,18 +1,15 @@
 import { EditorState } from '@codemirror/state';
 import { EditorView } from 'codemirror';
 import { afterEach, describe, expect, it } from 'vitest';
-import { parser } from '../grammar/zenuml-parser';
 import { zenumlHighlighter } from './zenuml-highlighter';
 import { checkZenuml } from './zenuml-linter';
+import { zenumlParticipantStateField } from './zenuml-participant-manager';
 
-describe('Sequence Linter', () => {
+describe('ZenUML Linter', () => {
 	function getDiagnostics(doc: string) {
 		const state = EditorState.create({
 			doc: doc.trim(),
-			extensions: [
-				// Add the ZenUML language support
-				zenumlHighlighter(),
-			],
+			extensions: [zenumlParticipantStateField, zenumlHighlighter()],
 		});
 		const view = new EditorView({ state, parent: document.body });
 		const diagnostics = checkZenuml(view);

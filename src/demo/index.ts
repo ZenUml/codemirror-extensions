@@ -5,17 +5,15 @@ import { basicSetup } from 'codemirror';
 import { dracula, tomorrow } from 'thememirror';
 import {
 	zenumlCompletionKeyMaps,
-	zenumlCompletionListener,
 	zenumlCompletions,
+	zenumlParticipantStateField,
 } from '../extensions';
 import { updateHighlightStyle, zenumlHighlighter } from '../extensions/zenuml-highlighter';
 import { zenumlLinter } from '../extensions/zenuml-linter';
 import { parser } from '../grammar/zenuml-parser';
 import { getInitialTheme, setTheme } from './dark-mode';
 import { createThemeExtension } from './them-toggle';
-// Define autocompletion source
 
-// Create a sample document
 const doc = `title Order Service (Demonstration only)
 // Styling participants with background colors is an experimental feature.
 // This feature is available for users to test and provide feedback.
@@ -57,6 +55,7 @@ const state = EditorState.create({
 	doc,
 	extensions: [
 		basicSetup,
+		zenumlParticipantStateField,
 		zenumlHighlighter(),
 		autocompletion({
 			override: [zenumlCompletions],
@@ -68,7 +67,6 @@ const state = EditorState.create({
 		themeCompartment.of(darkTheme),
 		zenumlLinter(),
 		keymap.of([...zenumlCompletionKeyMaps]),
-		EditorView.updateListener.of(zenumlCompletionListener),
 	],
 });
 

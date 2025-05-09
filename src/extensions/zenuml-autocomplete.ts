@@ -4,42 +4,8 @@ import {
 	acceptCompletion,
 	closeCompletion,
 } from '@codemirror/autocomplete';
-import type { ViewUpdate } from '@codemirror/view';
-import type { SyntaxNodeRef, Tree, TreeCursor } from '@lezer/common';
+import { getParticipants } from './zenuml-participant-manager';
 
-import { parser } from '../grammar/zenuml-parser';
-
-// Function to extract participant names from the syntax tree
-// Store participant names globally for autocompletion
-const participantNames = new Set<string>();
-
-function extractParticipantNames(content: string, tree: Tree): void {
-	participantNames.clear();
-
-	tree.cursor().iterate((node: SyntaxNodeRef) => {
-		if (node.type.name === 'Participant') {
-			const c = node as unknown as TreeCursor;
-			c.firstChild();
-			while (c.nextSibling()) {
-				if (c.type.name === 'Name' || c.type.name === 'Identifier') {
-					const name = content.slice(c.from, c.to).trim();
-					if (name) {
-						participantNames.add(name);
-					}
-				}
-			}
-		}
-	});
-}
-
-function zenumlCompletionListener(update: ViewUpdate): void {
-	if (update.docChanged) {
-		const content = update.state.doc.toString();
-		const tree = parser.parse(content);
-		extractParticipantNames(content, tree);
-	}
-}
-// Get default completions
 const defaultOptions: Completion[] = [
 	// Keywords
 	{ label: 'title', type: 'keyword' },
@@ -127,13 +93,15 @@ function zenumlCompletions(context: CompletionContext) {
 	const word = context.matchBefore(/[@<]{0,2}\w*/);
 	if (!word || (word.from === word.to && !context.explicit)) return null;
 
-	const participantOptions: Completion[] = Array.from(participantNames).map((name) => ({
-		label: name,
-		type: 'variable',
-		boost: 1.5,
-	}));
+	const currentParticipantNames = getParticipants(context.state);
+	const participantOptions: Completion[] = Array.from(currentParticipantNames)
+		.slice(0, currentParticipantNames.size - 1) // Exclude the participant name being typed
+		.map((name) => ({
+			label: name,
+			type: 'variable',
+			boost: 1.5, // Keep boost for participant names
+		}));
 
-	// Combine both sets of completions
 	return {
 		from: word.from,
 		options: [...defaultOptions, ...participantOptions],
@@ -146,4 +114,4 @@ const zenumlCompletionKeyMaps = [
 	{ key: 'Escape', run: closeCompletion },
 ];
 
-export { zenumlCompletionKeyMaps, zenumlCompletions, zenumlCompletionListener };
+export { zenumlCompletionKeyMaps, zenumlCompletions };
