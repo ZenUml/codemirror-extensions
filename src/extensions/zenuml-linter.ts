@@ -9,31 +9,47 @@ async function checkDocument(view: EditorView): Promise<Diagnostic[]> {
 	const result = await zenuml.parse(doc);
 	// If the parse result contains syntax errors, add them to diagnostics
 	if (result && result.errorDetails && Array.isArray(result.errorDetails) && result.errorDetails.length > 0) {
-		// Only process the first error detail
-		const error = result.errorDetails[0];
-		// Convert line/column to position in the document
-		// Note: line is 1-indexed, column is 0-indexed in the ParseResult
-		const line = error.line - 1; // Convert to 0-indexed
-		const column = error.column;
+		// Find the first and last error positions to create a range
+		const firstError = result.errorDetails[0];
+		const lastError = result.errorDetails[result.errorDetails.length - 1];
+
+		// Convert line/column to position in the document for first error
+		const firstLine = firstError.line - 1; // Convert to 0-indexed
+		const firstColumn = firstError.column;
+
+		// Convert line/column to position in the document for last error
+		const lastLine = lastError.line - 1; // Convert to 0-indexed
+		const lastColumn = lastError.column;
 
 		// Calculate the position in the document
 		const lines = doc.split('\n');
-		if (line >= 0 && line < lines.length) {
-			// Calculate the character position based on line and column
-			let position = 0;
-			for (let i = 0; i < line; i++) {
-				position += lines[i].length + 1; // +1 for newline character
-			}
-			const from = position + column;
-			const to = from + 1; // Default to single character at the error position
 
-			diagnostics.push({
-				from,
-				to,
-				severity: 'error',
-				message: error.msg || 'Syntax error in zenuml diagram',
-			});
+		let firstPosition = 0;
+		if (firstLine >= 0 && firstLine < lines.length) {
+			for (let i = 0; i < firstLine; i++) {
+				firstPosition += lines[i].length + 1; // +1 for newline character
+			}
+			firstPosition += firstColumn;
 		}
+
+		let lastPosition = 0;
+		if (lastLine >= 0 && lastLine < lines.length) {
+			for (let i = 0; i < lastLine; i++) {
+				lastPosition += lines[i].length + 1; // +1 for newline character
+			}
+			lastPosition += lastColumn;
+		}
+
+		// Ensure the range is valid (from <= to)
+		const from = Math.min(firstPosition, lastPosition);
+		const to = Math.max(firstPosition, lastPosition) + 1; // Extend to include the last error character
+
+		diagnostics.push({
+			from,
+			to,
+			severity: 'error',
+			message: firstError.msg || 'Syntax error in zenuml diagram',
+		});
 	}
 
 	// If parsing failed overall, add a general error
