@@ -8,7 +8,11 @@ async function checkDocument(view: EditorView): Promise<Diagnostic[]> {
 	const doc = view.state.doc.toString();
 	const result = await zenuml.parse(doc);
 	// If the parse result contains syntax errors, add them to diagnostics
-	if (result && result.errorDetails && Array.isArray(result.errorDetails) && result.errorDetails.length > 0) {
+	if (
+		result?.errorDetails &&
+		Array.isArray(result.errorDetails) &&
+		result.errorDetails.length > 0
+	) {
 		// Find the first and last error positions to create a range
 		const firstError = result.errorDetails[0];
 		const lastError = result.errorDetails[result.errorDetails.length - 1];
