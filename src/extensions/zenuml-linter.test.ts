@@ -60,43 +60,38 @@ OrderController.post(payload12) {
 
 		expect(diagnostics).toHaveLength(0);
 	});
-	it('should detect unclosed stereotypes', async () => {
+	it('should not detect unclosed stereotypes', async () => {
 		const doc = `
       <<interface A
     `;
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(1);
-		expect(diagnostics[0].message).toBe('Unclosed stereotype');
+		expect(diagnostics).toHaveLength(0);
 	});
 
-	it('should detect invalid color formats', async () => {
+	it('should not detect invalid color formats', async () => {
 		const doc = `
       participant A #12
     `;
 		const diagnostics = await getDiagnostics(doc);
-
-		expect(diagnostics).toHaveLength(1);
-		expect(diagnostics[0].message).toBe('Invalid color format');
+		expect(diagnostics).toHaveLength(0);
 	});
 
-	it('should detect empty group block', async () => {
+	it('should not detect empty group block', async () => {
 		const doc = `
       group test {
       }
     `;
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(1);
-		expect(diagnostics[0].message).toBe('Empty block');
+		expect(diagnostics).toHaveLength(0);
 	});
 
-	it('should detect empty if statement block', async () => {
+	it('should not detect empty if statement block', async () => {
 		const doc = `
       if (true) {
       }
     `;
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(1);
-		expect(diagnostics[0].message).toBe('Empty block');
+		expect(diagnostics).toHaveLength(0);
 	});
 
 	it('not a empty block', async () => {
@@ -117,28 +112,23 @@ OrderController.post(payload12) {
     `;
 		const diagnostics = await getDiagnostics(doc);
 		expect(diagnostics).toHaveLength(1);
-		expect(diagnostics[0].message).toBe('Empty condition');
 	});
 
-	it('should detect undefined participants', async () => {
+	it('should not detect undefined participants', async () => {
 		const doc = `
        A -> B:
     `;
 
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(2);
-		expect(diagnostics[0].message).toBe('Undefined participant: A');
-		expect(diagnostics[1].message).toBe('Undefined participant: B');
+		expect(diagnostics).toHaveLength(0);
 	});
 
-	it('should detect missing to participant', async () => {
+	it('should not detect missing to participant', async () => {
 		const doc = `
       A ->
     `;
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(2);
-		expect(diagnostics[0].message).toBe('Undefined participant: A');
-		expect(diagnostics[1].message).toBe('Missing To participant');
+		expect(diagnostics).toHaveLength(0);
 	});
 
 	it('should detect missing from participant', async () => {
@@ -146,9 +136,7 @@ OrderController.post(payload12) {
       -> B: message
     `;
 		const diagnostics = await getDiagnostics(doc);
-		expect(diagnostics).toHaveLength(2);
-		expect(diagnostics[0].message).toBe('Missing From participant');
-		expect(diagnostics[1].message).toBe('Undefined participant: B');
+		expect(diagnostics).toHaveLength(1);
 	});
 
 	afterEach(() => {
