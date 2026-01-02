@@ -21,35 +21,38 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write    # for git tag push
+      id-token: write    # for npm OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: false
-      
+
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Lint and Test
         run: |
           pnpm lint
           pnpm test
-      
+
       - name: Build package
         run: pnpm build
-      
+
       - name: Version bump from input (manual trigger)
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -57,19 +60,20 @@ jobs:
           git config --global user.email "actions@github.com"
           npm version ${{ github.event.inputs.version }} -m "Bump version to %s [skip ci]"
           echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-      
+
       - name: Extract version from release (release trigger)
         if: github.event_name == 'release'
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           VERSION=${VERSION#v}
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
-      
-      - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm @latest
+
+      - name: Publish to npm with provenance
+        run: pnpm publish --provenance --access public --no-git-checks
+
       - name: Push version changes
         if: github.event_name == 'workflow_dispatch'
-        run: git push --follow-tags 
+        run: git push --follow-tags
