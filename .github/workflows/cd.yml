@@ -81,7 +81,7 @@ jobs:
 
       - name: Bump Version
         id: bump
-        run: node scripts/bump-version.js
+        run: node scripts/bump-version.cjs
 
       - name: Commit version bump
         run: |
