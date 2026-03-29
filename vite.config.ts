@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 
-// Get all CodeMirror dependencies from package.json to externalize them
-const cmDependencies = [
+// Externalize all peer dependencies and regular dependencies (consumers provide them)
+const externalDependencies = [
 	'@codemirror/autocomplete',
 	'@codemirror/commands',
 	'@codemirror/language',
@@ -14,6 +14,7 @@ const cmDependencies = [
 	'@lezer/common',
 	'@lezer/highlight',
 	'@lezer/lr',
+	'@zenuml/core',
 	'codemirror',
 	'thememirror'
 ];
@@ -32,7 +33,7 @@ export default defineConfig(({ command }) => {
 				formats: ['es'],
 			} : undefined,
 			rollupOptions: isProduction ? {
-				external: cmDependencies,
+				external: externalDependencies,
 				output: {
 					preserveModules: true,
 					preserveModulesRoot: 'src',
